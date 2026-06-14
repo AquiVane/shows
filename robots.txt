@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://shows.cosmart.com.ar/sitemap.xml

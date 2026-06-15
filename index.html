@@ -835,6 +835,20 @@ document.querySelectorAll(".fi").forEach(el=>obs.observe(el));
 const pmd=primerMesDisponible();
 if(pmd){cY=pmd.y;cM=pmd.m;}
 rCal();
+
+// Pre-selección de show por parámetro URL: ?show=A / B / C / AC / BC
+(function(){
+  const p = new URLSearchParams(window.location.search).get('show');
+  if(!p) return;
+  const map = {A:'sA', B:'sB', C:'sC', AC:'sAC', BC:'sBC'};
+  const id = map[p.toUpperCase()];
+  if(!id) return;
+  const radio = document.getElementById(id);
+  if(!radio) return;
+  radio.checked = true;
+  radio.dispatchEvent(new Event('change'));
+  setTimeout(()=>{ document.getElementById('reserva').scrollIntoView({behavior:'smooth',block:'start'}); }, 300);
+})();
 </script>
 
 <!-- Confirmación post-WhatsApp -->

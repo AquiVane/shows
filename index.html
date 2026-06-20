@@ -247,7 +247,7 @@ select option{background:#111110;color:var(--texto)}
 .show-lbl{display:flex;flex-direction:column;align-items:center;gap:.38rem;padding:.9rem .4rem;border:1px solid rgba(212,196,168,.1);cursor:pointer;text-align:center;transition:all .3s;font-size:.58rem;letter-spacing:.06em;color:var(--texto-s)}
 .show-lbl:hover{border-color:rgba(127,255,127,.28);color:var(--texto)}
 .show-radio:checked+.show-lbl{border-color:var(--neon);color:var(--neon);background:rgba(127,255,127,.04)}
-.show-lbl-ic{font-size:1.3rem}
+.show-lbl-ic{display:flex;align-items:center;justify-content:center;gap:.2rem;height:2.4rem}.show-lbl-ic img{height:2.2rem;width:auto;object-fit:contain}
 .show-lbl-nm{font-weight:500;text-transform:uppercase;letter-spacing:.13em}
 .show-lbl-sb{color:inherit;opacity:.7;font-size:.54rem}
 
@@ -534,13 +534,13 @@ footer{background:var(--negro);border-top:1px solid rgba(212,196,168,.06);paddin
         <div class="fg">
           <label class="fl">Elegí tu show *</label>
           <div class="show-sel" style="grid-template-columns:1fr 1fr 1fr">
-            <div><input type="radio" name="show" value="A — Depredador con Luz" id="sA" class="show-radio" required onchange="updP()"><label for="sA" class="show-lbl"><span class="show-lbl-ic">👾</span><span class="show-lbl-nm">Show A</span><span class="show-lbl-sb">Depredador</span></label></div>
-            <div><input type="radio" name="show" value="B — Bailarín con Luz" id="sB" class="show-radio" onchange="updP()"><label for="sB" class="show-lbl"><span class="show-lbl-ic">🤖</span><span class="show-lbl-nm">Show B</span><span class="show-lbl-sb">Bailarín con Luz</span></label></div>
-            <div><input type="radio" name="show" value="C — Germán en Vivo" id="sC" class="show-radio" onchange="updP()"><label for="sC" class="show-lbl"><span class="show-lbl-ic">🎤</span><span class="show-lbl-nm">Show C</span><span class="show-lbl-sb">Germán en Vivo</span></label></div>
+            <div><input type="radio" name="show" value="A — Depredador con Luz" id="sA" class="show-radio" required onchange="updP()"><label for="sA" class="show-lbl"><span class="show-lbl-ic"><img src="iconos/Ícono Depredador Led.png" alt="Depredador LED"></span><span class="show-lbl-nm">Show A</span><span class="show-lbl-sb">Depredador</span></label></div>
+            <div><input type="radio" name="show" value="B — Bailarín con Luz" id="sB" class="show-radio" onchange="updP()"><label for="sB" class="show-lbl"><span class="show-lbl-ic"><img src="iconos/Icono Traje Luces.png" alt="Bailarín con Luz"></span><span class="show-lbl-nm">Show B</span><span class="show-lbl-sb">Bailarín con Luz</span></label></div>
+            <div><input type="radio" name="show" value="C — Germán en Vivo" id="sC" class="show-radio" onchange="updP()"><label for="sC" class="show-lbl"><span class="show-lbl-ic"><img src="iconos/Ícono Cantante.png" alt="Germán en Vivo"></span><span class="show-lbl-nm">Show C</span><span class="show-lbl-sb">Germán en Vivo</span></label></div>
           </div>
           <div class="show-sel" style="grid-template-columns:1fr 1fr;margin-top:.5rem">
-            <div><input type="radio" name="show" value="AC — Depredador + Voz" id="sAC" class="show-radio" onchange="updP()"><label for="sAC" class="show-lbl"><span class="show-lbl-ic">👾🎤</span><span class="show-lbl-nm">Combo A+C</span><span class="show-lbl-sb">Depredador + Voz · 15% off</span></label></div>
-            <div><input type="radio" name="show" value="BC — Bailarín + Voz" id="sBC" class="show-radio" onchange="updP()"><label for="sBC" class="show-lbl"><span class="show-lbl-ic">🤖🎤</span><span class="show-lbl-nm">Combo B+C</span><span class="show-lbl-sb">Bailarín + Voz · 15% off</span></label></div>
+            <div><input type="radio" name="show" value="AC — Depredador + Voz" id="sAC" class="show-radio" onchange="updP()"><label for="sAC" class="show-lbl"><span class="show-lbl-ic"><img src="iconos/Ícono cantante y depredador led.png" alt="Combo Depredador + Voz"></span><span class="show-lbl-nm">Combo A+C</span><span class="show-lbl-sb">Depredador + Voz · 15% off</span></label></div>
+            <div><input type="radio" name="show" value="BC — Bailarín + Voz" id="sBC" class="show-radio" onchange="updP()"><label for="sBC" class="show-lbl"><span class="show-lbl-ic"><img src="iconos/Ícono traje de luces y cantante.png" alt="Combo Bailarín + Voz"></span><span class="show-lbl-nm">Combo B+C</span><span class="show-lbl-sb">Bailarín + Voz · 15% off</span></label></div>
           </div>
         </div>
 

@@ -534,13 +534,13 @@ footer{background:var(--negro);border-top:1px solid rgba(212,196,168,.06);paddin
         <div class="fg">
           <label class="fl">Elegí tu show *</label>
           <div class="show-sel" style="grid-template-columns:1fr 1fr 1fr">
-            <div><input type="radio" name="show" value="A — Depredador con Luz" id="sA" class="show-radio" required onchange="updP()"><label for="sA" class="show-lbl"><span class="show-lbl-ic"><img src="iconos/Ícono Depredador Led.png" alt="Depredador LED"></span><span class="show-lbl-nm">Show A</span><span class="show-lbl-sb">Depredador</span></label></div>
-            <div><input type="radio" name="show" value="B — Bailarín con Luz" id="sB" class="show-radio" onchange="updP()"><label for="sB" class="show-lbl"><span class="show-lbl-ic"><img src="iconos/Icono Traje Luces.png" alt="Bailarín con Luz"></span><span class="show-lbl-nm">Show B</span><span class="show-lbl-sb">Bailarín con Luz</span></label></div>
-            <div><input type="radio" name="show" value="C — Germán en Vivo" id="sC" class="show-radio" onchange="updP()"><label for="sC" class="show-lbl"><span class="show-lbl-ic"><img src="iconos/Ícono Cantante.png" alt="Germán en Vivo"></span><span class="show-lbl-nm">Show C</span><span class="show-lbl-sb">Germán en Vivo</span></label></div>
+            <div><input type="radio" name="show" value="A — Depredador con Luz" id="sA" class="show-radio" required onchange="updP()"><label for="sA" class="show-lbl"><span class="show-lbl-ic"><img src="iconos/icono-depredador.png" alt="Depredador LED"></span><span class="show-lbl-nm">Show A</span><span class="show-lbl-sb">Depredador</span></label></div>
+            <div><input type="radio" name="show" value="B — Bailarín con Luz" id="sB" class="show-radio" onchange="updP()"><label for="sB" class="show-lbl"><span class="show-lbl-ic"><img src="iconos/icono-bailarin.png" alt="Bailarín con Luz"></span><span class="show-lbl-nm">Show B</span><span class="show-lbl-sb">Bailarín con Luz</span></label></div>
+            <div><input type="radio" name="show" value="C — Germán en Vivo" id="sC" class="show-radio" onchange="updP()"><label for="sC" class="show-lbl"><span class="show-lbl-ic"><img src="iconos/icono-cantante.png" alt="Germán en Vivo"></span><span class="show-lbl-nm">Show C</span><span class="show-lbl-sb">Germán en Vivo</span></label></div>
           </div>
           <div class="show-sel" style="grid-template-columns:1fr 1fr;margin-top:.5rem">
-            <div><input type="radio" name="show" value="AC — Depredador + Voz" id="sAC" class="show-radio" onchange="updP()"><label for="sAC" class="show-lbl"><span class="show-lbl-ic"><img src="iconos/Ícono cantante y depredador led.png" alt="Combo Depredador + Voz"></span><span class="show-lbl-nm">Combo A+C</span><span class="show-lbl-sb">Depredador + Voz · 15% off</span></label></div>
-            <div><input type="radio" name="show" value="BC — Bailarín + Voz" id="sBC" class="show-radio" onchange="updP()"><label for="sBC" class="show-lbl"><span class="show-lbl-ic"><img src="iconos/Ícono traje de luces y cantante.png" alt="Combo Bailarín + Voz"></span><span class="show-lbl-nm">Combo B+C</span><span class="show-lbl-sb">Bailarín + Voz · 15% off</span></label></div>
+            <div><input type="radio" name="show" value="AC — Depredador + Voz" id="sAC" class="show-radio" onchange="updP()"><label for="sAC" class="show-lbl"><span class="show-lbl-ic"><img src="iconos/icono-combo-ac.png" alt="Combo Depredador + Voz"></span><span class="show-lbl-nm">Combo A+C</span><span class="show-lbl-sb">Depredador + Voz · 15% off</span></label></div>
+            <div><input type="radio" name="show" value="BC — Bailarín + Voz" id="sBC" class="show-radio" onchange="updP()"><label for="sBC" class="show-lbl"><span class="show-lbl-ic"><img src="iconos/icono-combo-bc.png" alt="Combo Bailarín + Voz"></span><span class="show-lbl-nm">Combo B+C</span><span class="show-lbl-sb">Bailarín + Voz · 15% off</span></label></div>
           </div>
         </div>
 
@@ -697,6 +697,57 @@ const OCC_C={"2025-08-07": ["14:00", "14:30", "15:00", "15:30", "16:00", "16:30"
 let OCC=OCC_TRAJE;
 let cY=new Date().getFullYear(),cM=new Date().getMonth(),selF=null,selH=null;
 
+// ─── Google Calendar ──────────────────────────────────────────────────────────
+// Pedile a Germán: Settings de Google Calendar → ID del calendario y
+// en Google Cloud Console → API Key (con restricción al dominio shows.cosmart.com.ar)
+const GCAL={
+  CALENDAR_ID:"REEMPLAZAR_CON_CALENDAR_ID",  // ej: "ger@cosmart.com.ar"
+  API_KEY:    "REEMPLAZAR_CON_API_KEY"         // Google Cloud Console → Credentials
+};
+const _gcalCache={};  // caché por fecha para no consultar dos veces
+
+// Convierte "YYYY-MM-DD" + slot "HH:MM" a Date UTC (Argentina = UTC-3)
+function slotToUTC(dateStr,slot){
+  const [y,m,d]=dateStr.split("-").map(Number);
+  const [sh,sm]=slot.split(":").map(Number);
+  // slots 00:xx - 13:xx son del día siguiente (el rango va de 14:00 a 01:30)
+  const dayOff=(sh<14)?1:0;
+  return new Date(Date.UTC(y,m-1,d+dayOff,sh+3,sm,0));
+}
+
+async function fetchGCalBlocked(dateStr){
+  if(GCAL.CALENDAR_ID.includes("REEMPLAZAR")||GCAL.API_KEY.includes("REEMPLAZAR"))return[];
+  if(_gcalCache[dateStr])return _gcalCache[dateStr];
+  try{
+    const [y,m,d]=dateStr.split("-").map(Number);
+    // Consultamos desde las 00:00 AR del día hasta las 06:00 UTC del día siguiente
+    // para capturar shows que terminen entrada la madrugada
+    const tMin=new Date(Date.UTC(y,m-1,d,3,0,0)).toISOString();
+    const tMax=new Date(Date.UTC(y,m-1,d+1,6,0,0)).toISOString();
+    const url=`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(GCAL.CALENDAR_ID)}/events?key=${GCAL.API_KEY}&timeMin=${encodeURIComponent(tMin)}&timeMax=${encodeURIComponent(tMax)}&singleEvents=true&orderBy=startTime`;
+    const res=await fetch(url);
+    if(!res.ok)return[];
+    const data=await res.json();
+    const all=gSlots();
+    const blocked=new Set();
+    for(const ev of(data.items||[])){
+      const start=ev.start.dateTime?new Date(ev.start.dateTime):null;
+      const end  =ev.end.dateTime  ?new Date(ev.end.dateTime)  :null;
+      if(!start||!end)continue; // ignorar eventos de día completo
+      const buffStart=new Date(start.getTime()-60*60*1000); // -1hr
+      const buffEnd  =new Date(end.getTime()  +60*60*1000); // +1hr
+      for(const slot of all){
+        const t=slotToUTC(dateStr,slot);
+        if(t>=buffStart&&t<buffEnd)blocked.add(slot);
+      }
+    }
+    const result=[...blocked];
+    _gcalCache[dateStr]=result;
+    return result;
+  }catch(e){return[];}
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 function togglePrice(btn,id){const el=document.getElementById(id);const o=el.classList.toggle('open');btn.textContent=o?'Cerrar precio ↑':'Consultar precio ↓';}
 function showP(s,t){const el=document.getElementById('p'+s+'v');el.textContent='$'+PR[s][t].toLocaleString('es-AR');el.classList.add('vis');}
 function gSlots(){const s=[];for(let h=14;h<26;h++)for(let m=0;m<60;m+=30)s.push(String(h%24).padStart(2,"0")+":"+(m===0?"00":"30"));return s;}
@@ -763,13 +814,27 @@ function rCal(){
   }
   actualizarAviso();
 }
-function selDate(ds,d){selF=ds;selH=null;document.getElementById("fechaH").value=ds;document.getElementById("fLbl2").textContent=d+" de "+MES[cM];document.getElementById("horarioH").value="";rCal();rSlots(ds);document.getElementById("slotsW").classList.add("on");}
-function rSlots(ds){
+async function selDate(ds,d){
+  selF=ds;selH=null;
+  document.getElementById("fechaH").value=ds;
+  document.getElementById("fLbl2").textContent=d+" de "+MES[cM];
+  document.getElementById("horarioH").value="";
+  rCal();
+  document.getElementById("slotsW").classList.add("on");
+  // Mostrar loading mientras consulta Google Calendar
+  const g=document.getElementById("slotsG");
+  g.innerHTML='<span style="opacity:.5;font-size:.85rem;grid-column:1/-1">Consultando disponibilidad…</span>';
+  const gcalBlocked=await fetchGCalBlocked(ds);
+  rSlots(ds,gcalBlocked);
+}
+function rSlots(ds,gcalBlocked=[]){
   const g=document.getElementById("slotsG");g.innerHTML="";
   const all=gSlots(),occ=OCC[ds]||[];
+  // Unir bloqueados estáticos + Google Calendar
+  const allOcc=[...new Set([...occ,...gcalBlocked])];
   all.forEach(slot=>{
     const b=document.createElement("button");b.type="button";b.className="slot";b.textContent=slot;
-    if(isBl(slot,all,occ)){b.classList.add("off");}
+    if(isBl(slot,all,allOcc)){b.classList.add("off");}
     else{b.addEventListener("click",()=>{document.querySelectorAll(".slot").forEach(x=>x.classList.remove("on"));b.classList.add("on");selH=slot;document.getElementById("horarioH").value=slot;updP();});}
     g.appendChild(b);
   });

@@ -591,6 +591,11 @@ footer{background:var(--negro);border-top:1px solid rgba(212,196,168,.06);paddin
           <div class="precio-box-aviso">⚠️ El saldo restante (50%) se abona el <strong>día anterior</strong> al evento por transferencia bancaria enviando comprobante por WhatsApp a COSMART. Una vez que transferís, enviá el comprobante por WhatsApp a COSMART para confirmar tu fecha.</div>
         </div>
 
+        <div class="fg" style="display:flex;align-items:flex-start;gap:.6rem;margin:1.2rem 0 1rem">
+          <input type="checkbox" id="privacyCheck" checked required style="width:16px;height:16px;padding:0;flex-shrink:0;margin-top:.25rem;accent-color:var(--beige-o)">
+          <label for="privacyCheck" style="font-size:.68rem;color:var(--texto-s);line-height:1.6;font-weight:300;cursor:pointer"><span>Acepto la <a href="https://cosmart.com.ar/politica-de-privacidad" target="_blank" style="color:var(--beige-o)">Política de Privacidad</a> de COSMART y consiento recibir comunicaciones del ecosistema COSMART.</span></label>
+        </div>
+
         <button type="button" class="mp-btn on" id="confirmarBtn" onclick="mostrarTransferencia()">Confirmar reserva y ver datos de pago →</button>
 <div class="transfer-box" id="transferBox" style="display:none">
   <div class="transfer-title">Datos para la transferencia</div>
@@ -859,6 +864,7 @@ function updP(){
   document.getElementById("pBox").classList.add("on");// transfer shown on submit;
 }
 function mostrarTransferencia(){
+  if(!document.getElementById("privacyCheck").checked){alert("Debés aceptar la Política de Privacidad para continuar.");document.getElementById("privacyCheck").focus();return;}
   const s=getSK(),t=document.getElementById("tipo").value;
   if(!s||!t){alert("Elegí un show y tipo de evento.");return;}
   const campos=[["nombre","nombre"],["email","email"],["wsp","WhatsApp"],["inv","invitados"],["zona","zona"],["salon","salón"],["dir","dirección"]];

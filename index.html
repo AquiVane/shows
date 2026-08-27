@@ -545,7 +545,7 @@ footer{background:var(--negro);border-top:1px solid rgba(212,196,168,.06);paddin
       <p class="form-sub">Completá todos los campos, elegí fecha y horario. Al confirmar, te mostramos los datos para transferir la seña del 50% y asegurar tu fecha.</p>
       <div class="form-hint">💡 Al elegir show y tipo de evento, el precio aparece debajo de las opciones.</div>
 
-      <form id="theForm" action="https://formspree.io/f/mzdyngen" method="POST">
+      <form id="theForm">
         <div class="fg">
           <label class="fl">Elegí tu show *</label>
           <div class="show-sel" style="grid-template-columns:1fr 1fr 1fr">
@@ -623,8 +623,6 @@ footer{background:var(--negro);border-top:1px solid rgba(212,196,168,.06);paddin
     Ya transferí — enviar comprobante
   </a>
 </div>
-        <input type="hidden" name="_subject" value="Nueva reserva — Germán Aquino Shows">
-        <input type="hidden" name="_next" value="gracias.html">
         <p style="font-size:.6rem;color:var(--texto-s);margin-top:1rem;line-height:1.7">Al continuar aceptás nuestras <a href="#" onclick="openModal('tcModal');return false" style="color:var(--beige-o)">Bases y Condiciones</a> y la <a href="#" onclick="openModal('ppModal');return false" style="color:var(--beige-o)">Política de Privacidad</a>.</p>
       </form>
     </div>
@@ -912,15 +910,14 @@ function mostrarTransferencia(){
     setTimeout(()=>document.getElementById("confirmOverlay").classList.add("on"), 500);
   }, {once:true});
 
-  // Enviar form a Formspree
+  // Enviar datos de la reserva (manda mail interno a talent@ y ger@cosmart.com.ar)
   const fd=new FormData(document.getElementById("theForm"));
-  // Envío a COSMART
-  fetch(document.getElementById("theForm").action,{method:"POST",body:fd,headers:{"Accept":"application/json"}});
-  // Envío a Ger — reemplazar ENDPOINT_GER con el endpoint nuevo de Formspree
-  const endpointGer="https://formspree.io/f/xkoygzjp";
-  if(!endpointGer.includes("ENDPOINT_GER")){
-    fetch(endpointGer,{method:"POST",body:new FormData(document.getElementById("theForm")),headers:{"Accept":"application/json"}});
-  }
+  const datos=Object.fromEntries(fd.entries());
+  fetch("https://cosmart-design.conglomeradocosmart.workers.dev/shows/contacto",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(datos)
+  }).catch(()=>{});
 }
 
 function copyText(text, el){
